@@ -293,7 +293,38 @@ This environment provides a foundation for hands-on learning, threat detection e
 
               systemctl status thehive
 
+> [!NOTE]
+> If you are unable to access TheHive dashboard, check status of elasticsearch, thehive and cassandra.
+> Default Cred are: username:admin, password:secret
 
+4. Wazuh:
+      1. Your Wazuh credentials are stored in passwords.txt. To access this file:
+            - Check if these folders are available in your home directory
+                 <img width="1058" height="202" alt="image" src="https://github.com/user-attachments/assets/d98f9fb4-212f-4306-8071-43ae4a889d6c" />
+            - Extract the .tar file, the highlighted file has all your default credentials:
+
+                    tar -xvf wazuh-install-files.tar
+                 <img width="1090" height="587" alt="image" src="https://github.com/user-attachments/assets/5bffc4c6-bddf-4c17-b3e8-d28031f51f80" />
+
+      2. On the windows virtual machine, open wazuh dashboard and click on **"Deploy new Agent"**:
+            <img width="1912" height="894" alt="image" src="https://github.com/user-attachments/assets/e7bab749-783f-4b42-9de9-288b6279ab49" />
+
+      3. Select Windows, Enter the wazuh server IP address and assign an agent name:
+            <img width="1831" height="731" alt="image" src="https://github.com/user-attachments/assets/0572a26a-98ad-46fb-8de7-53bc4c69d156" />
+
+      4. Scroll down and copy the generated command in Powershell as Administrator:
+            <img width="1803" height="554" alt="image" src="https://github.com/user-attachments/assets/b7a07ed9-f183-480b-9358-64dc4d72c473" />
+
+      5. Start the service using the command:
+
+               NET START WazuhSvc
+
+      6. 
+
+
+
+            
+      
             
 
             
