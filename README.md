@@ -1,4 +1,4 @@
-<img width="1903" height="794" alt="image" src="https://github.com/user-attachments/assets/75dbcf2e-5721-4018-8655-d33098324d25" /># SOC-automation
+# SOC-automation
 
 ## Objective
 The goal of this project is to build a Hands-on Security Operations Center (SOC) lab that simulates a real-world detection, analysis and response workflow. The lab focuses on:
@@ -326,6 +326,7 @@ Shuffle require two components to be installed first:
 
       6. Go to the **"Overview"** tab in Wazuh dashboard and you should be able to see the Agent. It might take some time and you might have to refresh the dashboard a few times. Click on active and then click on the windows agent that we added.
             <img width="1894" height="758" alt="image" src="https://github.com/user-attachments/assets/f0440798-1bab-414d-84ce-e7aee389f334" />
+            <img width="1903" height="794" alt="image" src="https://github.com/user-attachments/assets/75dbcf2e-5721-4018-8655-d33098324d25" />
 
       7. By default Wazuh only logs something if a rule or alert is triggered. So we need to edit the config of wazuh-manager to log everything. Connect to the wazuh server via ssh and open
       the **"ossec.conf"** file stored in the directory: **"/var/ossec/etc/ossec.conf"**. Make a copy of the config file and store it in home incase we break something:
@@ -443,32 +444,33 @@ Shuffle require two components to be installed first:
    6. in this case, mimikatz executable is located in **"Win32"** folder so go to that folder and execute mimikatz:
          <img width="962" height="401" alt="image" src="https://github.com/user-attachments/assets/5d47817e-a360-4d0b-bcd9-36b6f187f9f8" />
 
-   7. If it shows warning like this, click **"Run anyway"**
+   7. If it shows warning like this, click **"Run anyway"**:
+      
          <img width="534" height="504" alt="image" src="https://github.com/user-attachments/assets/c5469bbb-d80c-469f-bd36-d58f2322d9fe" />
 
-   8. Now if we go back to the wazuh-manager CLI, and check the archives log, we should see mimikatz there:
+   9. Now if we go back to the wazuh-manager CLI, and check the archives log, we should see mimikatz there:
          <img width="1090" height="516" alt="image" src="https://github.com/user-attachments/assets/d6c85ee3-7eda-4745-90c2-a558e29e5194" />
 
-   9. On the wazuh dashboard, search for mimikatz and events should be there:
+   10. On the wazuh dashboard, search for mimikatz and events should be there:
          <img width="1855" height="746" alt="image" src="https://github.com/user-attachments/assets/bd994847-8a15-4cfc-a214-0958a31f949d" />
 
-   10. Now we need to fetch the event with **"data.win.system.eventID = 1"** which is the id for process creation event. To do that, we can set a filter that will show us only these events:
+   11. Now we need to fetch the event with **"data.win.system.eventID = 1"** which is the id for process creation event. To do that, we can set a filter that will show us only these events:
           <img width="1454" height="678" alt="image" src="https://github.com/user-attachments/assets/e9d5db3e-77b0-4aea-8c1a-8bcf7d6f48c0" />
 
-   11. Now there is only one event with ID = 1 in my case. Expand that event to see more information:
+   12. Now there is only one event with ID = 1 in my case. Expand that event to see more information:
           <img width="1476" height="701" alt="image" src="https://github.com/user-attachments/assets/f945d3b1-bb94-4493-9d20-5cad5ee6d667" />
 
-   12. Now we will xreate an alert for mimikatz. To do the we will use the field **"originalFileName"**. We can use other fields but this field will trigger the alert even if the attacker
+   13. Now we will xreate an alert for mimikatz. To do the we will use the field **"originalFileName"**. We can use other fields but this field will trigger the alert even if the attacker
        renames the file to mimicow (lol). 
           <img width="1464" height="688" alt="image" src="https://github.com/user-attachments/assets/8a28f77b-8283-43e9-9be1-46fd7904be63" />
 
-   13. To create an alert, we need to add a rule to the wazuh config, which we can acccess via the dashboard (Thank wazuh-god) so head to **"Custom rules"** file:
+   14. To create an alert, we need to add a rule to the wazuh config, which we can acccess via the dashboard (Thank wazuh-god) so head to **"Custom rules"** file:
           <img width="1837" height="751" alt="image" src="https://github.com/user-attachments/assets/505b7a95-8ea0-49b3-b6b5-314812a48755" />
           <img width="1846" height="657" alt="image" src="https://github.com/user-attachments/assets/f4205a16-c167-4c5d-9bb7-f1753c7a3ecc" />
           <img width="1837" height="596" alt="image" src="https://github.com/user-attachments/assets/189b044b-afeb-432a-9fb4-95e0e7c87f2c" />
           <img width="1838" height="372" alt="image" src="https://github.com/user-attachments/assets/41a06fd5-4405-4f94-a87e-ffd096d6e0fc" />
 
-   14. Add a rule to detect mimikatz:
+   15. Add a rule to detect mimikatz:
           - Custom rules always start from ID = 100000.
           - Levels 1-15: 1 is lowest in severity and 15 is the highest.
           - Mitre ID: t1003: Credential Dumping (What mimikatz is known for)
@@ -487,19 +489,19 @@ Shuffle require two components to be installed first:
 
           <img width="878" height="638" alt="image" src="https://github.com/user-attachments/assets/bdc767ac-478f-4c77-895a-160005de890b" />
 
-   15. To prove the field usage point, lets change the file name of mimikatz to "trustmebro" and see if the alert catches it:
+   16. To prove the field usage point, lets change the file name of mimikatz to "trustmebro" and see if the alert catches it:
           <img width="660" height="218" alt="image" src="https://github.com/user-attachments/assets/5da0d754-513b-4dfa-af78-a727916bbdd1" />
 
-   16. Run mimikatz again from the powershell:
+   17. Run mimikatz again from the powershell:
           <img width="892" height="203" alt="image" src="https://github.com/user-attachments/assets/9d559aee-b203-4643-9dd3-5222c19b5364" />
 
-   17. Heading back to dashboard, an alert should be triggered:
+   18. Heading back to dashboard, an alert should be triggered:
           <img width="1829" height="728" alt="image" src="https://github.com/user-attachments/assets/8d76a4b9-70e5-4082-94ef-3b9f2670ba54" />
 
-   18. Go to Events, the alert information should be there as expected. Also additional fileds can be added to the table. Expand the alert:
+   19. Go to Events, the alert information should be there as expected. Also additional fileds can be added to the table. Expand the alert:
           <img width="1868" height="722" alt="image" src="https://github.com/user-attachments/assets/5fddd600-1ff6-4211-bb8c-563f7ffc94e9" />
 
-   19. Inspecting the document, we can see that the image is changed but the original filename still detects mimikatz:
+   20. Inspecting the document, we can see that the image is changed but the original filename still detects mimikatz:
           <img width="1868" height="756" alt="image" src="https://github.com/user-attachments/assets/72cc3bab-d27b-425b-82cf-9a70ba541db6" />
 
 Pat yorself on the back for catching evil!! Now all we need to do is to automate our project:
