@@ -620,11 +620,165 @@ Pat yourself on the back for catching evil!! Now all we need to do is to automat
        <img width="1456" height="911" alt="image" src="https://github.com/user-attachments/assets/9cdcccd9-051b-49f9-a157-e920b323c1cc" />
        <img width="1450" height="914" alt="image" src="https://github.com/user-attachments/assets/b3d8c9d1-aea9-4214-bf87-56e2b87742e1" />
 
+> [!NOTE]
+> You might have to execute mimikatz again and again to generate new alerts as you make changes to the workflow.
+
 17. Expand the eventdata and you can see the hash value of the mimikatz. Explore this page and see what else can you use to identify the malware.
 
        <img width="1532" height="902" alt="image" src="https://github.com/user-attachments/assets/58e9c01f-04c7-48d8-b8fb-6526787c9131" />
 
-18.
+18. To capture just the hash value, SHA256, we need to modify the change_me node settings:
+
+       <img width="1458" height="897" alt="image" src="https://github.com/user-attachments/assets/0ec9667c-5e34-4ceb-8525-dac237112d4c" />
+
+19. Refresh all runs and the alert should look like this:
+
+       <img width="1441" height="884" alt="image" src="https://github.com/user-attachments/assets/868fe664-a987-4263-93e4-c0b8f4d38210" />
+
+20. Make an account with VirusTotal to get the API key to integrate it with our workflow [VirusTotal signin](https://www.virustotal.com/gui/sign-in). Select API key from profile.
+
+       <img width="1878" height="808" alt="image" src="https://github.com/user-attachments/assets/a43cc362-a2a6-45e2-bc02-b7d1f4f82d39" />
+
+21. Copy the API key and return to the workflow. Search for VirusTotal and drag and drop the node:
+    
+       <img width="1299" height="693" alt="image" src="https://github.com/user-attachments/assets/2974475b-6b7f-4da5-bf2d-08293a9d5ead" />
+
+22. Click on authenticate:
+
+       <img width="1439" height="892" alt="image" src="https://github.com/user-attachments/assets/d16751a6-3a59-4151-a60b-5154dbde9adf" />
+
+22. Paste your API key and submit:
+
+       <img width="1496" height="899" alt="image" src="https://github.com/user-attachments/assets/b0f0f213-945e-437d-98d4-4d7e0b9e965a" />
+
+23. Add the RegEx group to the VirusTotal node and set appropriate actions:
+
+       <img width="1443" height="917" alt="image" src="https://github.com/user-attachments/assets/057b3503-2f12-49f3-ad95-498409f05beb" />
+
+24. Go to Previous Runs, Select the last successful run and rerun it:
+
+       <img width="1445" height="894" alt="image" src="https://github.com/user-attachments/assets/788f4b01-a45f-4300-9a0c-41d66a3317d3" />
+       <img width="1442" height="906" alt="image" src="https://github.com/user-attachments/assets/360c7518-aa3d-423d-a9bc-2558deec7122" />
+       <img width="1431" height="626" alt="image" src="https://github.com/user-attachments/assets/5c38b025-65b1-43d9-95e4-e35873f45abb" />
+
+25. Scroll down and the VirusTotal node should have results:
+
+       <img width="1422" height="926" alt="image" src="https://github.com/user-attachments/assets/c26b731e-bbc9-45dc-bbad-64f9385bf359" />
+
+26. Expand the debug window and you should see **"attributes"**. Under it will be the reputation of the Hash.
+
+       <img width="1494" height="905" alt="image" src="https://github.com/user-attachments/assets/409de1dc-924f-4648-848c-3a8f4b0457b7" />
+
+27. Time to integrate TheHive with our workflow. Search TheHive and drag and drop it.
+
+       <img width="1436" height="815" alt="image" src="https://github.com/user-attachments/assets/dcb86f00-719e-435d-a629-8be2c455be9f" />
+
+28. Log into TheHive dashboard using default creds: **username:admin, Password:secret**
+
+       <img width="1911" height="911" alt="image" src="https://github.com/user-attachments/assets/70a820a3-a01f-4767-a695-1949dc0a4e2c" />
+
+29. Create a new organization and enter details. Then click **"Confirm"**
+
+       <img width="1906" height="922" alt="image" src="https://github.com/user-attachments/assets/6a5014d0-4b99-45e5-bed5-659779c520d4" />
+
+30. Click into the organization and add two users: one for the SOC Analyst (AKA you) and one for Shuffle (Service)
+
+       <img width="1911" height="879" alt="image" src="https://github.com/user-attachments/assets/7dc82d7c-b437-4b3a-a7ea-26f2a4c62ba2" />
+       <img width="1927" height="866" alt="image" src="https://github.com/user-attachments/assets/7c8a4df5-17f0-422a-a39f-aca2c6f94f58" />
+
+
+31. Create an API key for shuffle to connect with TheHive save the API key somewhere for now:
+
+       <img width="1891" height="607" alt="image" src="https://github.com/user-attachments/assets/171854a5-5f1f-4904-8451-09cf3f445f0e" />
+       <img width="1896" height="853" alt="image" src="https://github.com/user-attachments/assets/3f57394e-a3c0-4d0b-afb1-e0a5b0171778" />
+
+32. Go to the SOC Analyst user profile and set a password:
+
+       <img width="1875" height="633" alt="image" src="https://github.com/user-attachments/assets/3e80a930-438d-4d8b-a6d9-51caecc26ce0" />
+       <img width="1917" height="867" alt="image" src="https://github.com/user-attachments/assets/78ae552d-1e18-47d3-97fb-4998b5d25b09" />
+
+33. Logout of admin and login with the SOC Analyst user we just created:
+
+       <img width="1913" height="809" alt="image" src="https://github.com/user-attachments/assets/13ad1771-6176-4f73-9c25-530090f6dc6c" />
+
+34. Head back to our workflow and authenticate Shuffle with TheHive. Enter the IP address of TheHive server:
+
+       <img width="1507" height="920" alt="image" src="https://github.com/user-attachments/assets/c0c743b8-9397-4158-b6ef-851aa0613c9b" />
+
+35. Connect TheHive with VirusTotal. Hover over the node and click the blue dot and drag the arrow to TheHive:
+
+       <img width="1185" height="653" alt="image" src="https://github.com/user-attachments/assets/16b0e24a-fc68-4e77-8e51-742a688dd3ef" />
+       <img width="963" height="774" alt="image" src="https://github.com/user-attachments/assets/0f10dedb-2ab5-4636-8c8a-3223178c36f7" />
+
+36. Select TheHive node and configure it. At the writing of this readme, Shuffle is acting very buggy so we need to manually write an alert script in JSON bu selecting **"Advanced"**
+    and then pasting the script there. i will include a script here so you can just paste and test :). Kept it minimum, feel free to experiment
+
+               {
+                 "title": "$exec.title",
+                 "summary": "Mimikatz Usage detected on host $exec.text.win.system.computer with process ID $exec.text.win.system.processID and command line $exec.text.win.eventdata.commandLine",
+                 "description": "Mimikatz Usage detected on host $exec.text.win.system.computer with process ID $exec.text.win.system.processID and command line $exec.text.win.eventdata.commandLine",
+                 "type": "internal",
+                 "source": "Wazuh",
+                 "sourceRef": "$exec.rule_id",
+                 "tags": ["T1003", "Credential Dumping"]
+               }
+ 
+
+       <img width="447" height="830" alt="image" src="https://github.com/user-attachments/assets/ab2d5672-c8f4-4ec3-b8c0-0dbd8d4f6001" />       
+
+38. Allow all traffic on port 9000 in TheHive server firewall rule. This is a temporary rule to test.
+
+       <img width="1220" height="283" alt="image" src="https://github.com/user-attachments/assets/dd8e4a08-861c-411e-b5f2-1dde81664b35" />
+
+39. Rerun the workflow so you can check if an alert is being generated:
+
+       <img width="1499" height="918" alt="image" src="https://github.com/user-attachments/assets/72289c2b-a025-4ed2-a568-7942544df7c9" />
+
+40. Go to TheHive dashboard and expand the new cleated alert.
+
+       <img width="1917" height="792" alt="image" src="https://github.com/user-attachments/assets/6cfa9eed-39cd-4a90-9d88-d6deba06482e" />
+
+41. Search for **"Email"** and connect VirusTotal to it:
+
+       <img width="1643" height="919" alt="image" src="https://github.com/user-attachments/assets/e8cb65c2-14fe-44b3-bc58-49fd9701a72c" />
+
+42. Config example is like this: you can put your own email
+
+       <img width="459" height="744" alt="image" src="https://github.com/user-attachments/assets/266cbb46-7b9b-401a-bb66-c7a52b6f5a64" />
+
+43. And it pretty much works flawlessly:
+
+       <img width="964" height="429" alt="image" src="https://github.com/user-attachments/assets/905a31c6-5429-49ff-9442-232bfd538fff" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
        
