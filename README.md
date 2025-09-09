@@ -1,4 +1,4 @@
-# SOC-automation
+<img width="1903" height="794" alt="image" src="https://github.com/user-attachments/assets/75dbcf2e-5721-4018-8655-d33098324d25" /># SOC-automation
 
 ## Objective
 The goal of this project is to build a Hands-on Security Operations Center (SOC) lab that simulates a real-world detection, analysis and response workflow. The lab focuses on:
@@ -42,6 +42,7 @@ This environment provides a foundation for hands-on learning, threat detection e
 4. TheHive installation
 5. Shuffle installation
 6. Tools Configuration
+7. Malware Analysis (Mimikatz)
 
 ## Step 1: Windows installation with Sysmon configuration
 - Windows will be installed locally as a VM as we will be running some malicious programs and it will help with containment.
@@ -196,6 +197,10 @@ This environment provides a foundation for hands-on learning, threat detection e
 
 
 ## Shuffle Installation
+We can either use shuffle via logging onto the shuffle website or we can self-host it on the cloud. For this lab, we will be hosting a shuffle instance on Vultr.
+Shuffle require two components to be installed first:
+- Docker
+- Docker Compose
 
 
 
@@ -319,7 +324,221 @@ This environment provides a foundation for hands-on learning, threat detection e
 
                NET START WazuhSvc
 
-      6. 
+      6. Go to the **"Overview"** tab in Wazuh dashboard and you should be able to see the Agent. It might take some time and you might have to refresh the dashboard a few times. Click on active and then click on the windows agent that we added.
+            <img width="1894" height="758" alt="image" src="https://github.com/user-attachments/assets/f0440798-1bab-414d-84ce-e7aee389f334" />
+
+      7. By default Wazuh only logs something if a rule or alert is triggered. So we need to edit the config of wazuh-manager to log everything. Connect to the wazuh server via ssh and open
+      the **"ossec.conf"** file stored in the directory: **"/var/ossec/etc/ossec.conf"**. Make a copy of the config file and store it in home incase we break something:
+
+               cp /var/ossec/etc/ossec.conf ~/ossec-bkp.conf
+      8. Now open the config file in a file editor:
+   
+               nano /var/ossec/etc/ossec.conf
+      9. Now change the following fields to Yes. This would allow all logs to be stored in the archives and displayed on the dashboard. **"Ctrl + X" then "Y" then "Enter"** to save the file
+            <img width="1106" height="636" alt="image" src="https://github.com/user-attachments/assets/c9682726-70d8-4b21-bbe3-187f279db81a" />
+   
+      10. Restart the wazuh-manager:
+   
+               systemctl restart wazuh-manager
+   
+      11. All logs will be store in the archives file in the directory **"/var/ossec/logs/archives"**. Switch to the directory and check if the file is there
+   
+               ls /var/ossec/logs/archives
+            <img width="1063" height="89" alt="image" src="https://github.com/user-attachments/assets/b449046a-044f-4b08-9d94-9eb885d3165f" />
+   
+      12. Now for Wazuh to ingest the archives logs, we need to make changes in the filesbeats config file:
+   
+               nano /etc/filebeat/filebeat.yml
+   
+      13. In the config, set **"enabled: true"** under **"archives"** and **"Ctrl + X" then "Y" then "Enter"** to save the file.
+   
+            <img width="1094" height="635" alt="image" src="https://github.com/user-attachments/assets/96d86635-889f-4dba-8357-e434e8d2be2c" />
+   
+      14. Restart filebeat service
+   
+              systemctl restart filebeat
+   
+      15. Now to create an **"archives"** index pattern on our wazuh dashboard so we can see the archived logs go to **"Dashboard management"**:
+   
+             <img width="1643" height="758" alt="image" src="https://github.com/user-attachments/assets/0274e9f8-97cd-45df-9b91-7fc507e8d6e4" />
+   
+      16. Click **"Index Patterns"** then **"Create Index pattern"**
+   
+             <img width="1906" height="637" alt="image" src="https://github.com/user-attachments/assets/10d6b6dd-7daf-4faa-ab8c-b7f6069d4f48" />
+   
+      17. Create a new pattern named **"wazuh-archives-*"** and click **"Next Step"**
+   
+             <img width="1788" height="718" alt="image" src="https://github.com/user-attachments/assets/79815aa7-63ca-4a7e-9063-a5476df35f91" />
+   
+      18. Select **"timestamp"** from the bottom and click **"Create Index Pattern"**
+   
+             <img width="1794" height="703" alt="image" src="https://github.com/user-attachments/assets/887bab8b-beae-43b0-a891-116fdbfa67cc" />
+   
+      19. Head over to Discover:
+   
+             <img width="1805" height="779" alt="image" src="https://github.com/user-attachments/assets/4932f463-a709-440a-9b4e-d1bdde3dbfe1" />
+   
+      20. From the dropdown menu select the index pattern we created and the click **"Refresh"** to see the new logs. it might take some time:
+   
+             <img width="1850" height="739" alt="image" src="https://github.com/user-attachments/assets/041da8f4-bdaf-4250-a7e5-7228028c1aae" />
+
+
+> [!NOTE]
+> If the wazuh-agent installation fails, then uninstall and delete any wazuh-agent files using the control pannael before reinstallion attempt.
+
+5. Windows telemetry:
+      - Configure wazuh to ingest Sysmon logs:
+           1. All wazuh files are located under **C:\Program Files (x86)\ossec-agent** directory. Here you will find a **"ossec.conf"** file. Make a copy of the file and rename it to
+              **"ossec-backup.conf"** so incase of any misconfiguration, we can revert to original config.
+                 <img width="1129" height="594" alt="image" src="https://github.com/user-attachments/assets/6e6eb321-ddb0-425a-8c27-e782dfd94fc5" />
+
+           3. Open Notepad with administrator privilages and then open the **"ossec.conf"** file in the notpad from the above directory. If unable to see file, change the extension to
+              **"All files"**
+                 <img width="1275" height="609" alt="image" src="https://github.com/user-attachments/assets/e8bf3b97-333e-4838-9020-24082384795f" />
+           
+           4. Scroll down to the **"Log Analysis"** and paste the following snippet. This will enable the wazuh agent to ingest Sysmon logs. Be careful of the indentation. Also remove
+               Application, security and system logfile snippets as, for this lab, we want to fucus on Sysmon logs only:
+
+                    <localfile>
+                      <location>Microsoft-Windows-Sysmon/Operational</location>
+                      <log_format>eventchannel</log_format>
+                    </localfile>
+
+           5. New file look something like this, save the file:
+                 <img width="1274" height="604" alt="image" src="https://github.com/user-attachments/assets/2753330e-c243-489e-9b58-edf426f4849d" />
+
+           6. Restart the Wazuh service from **"Services"**
+                 <img width="1690" height="795" alt="image" src="https://github.com/user-attachments/assets/2518ee5a-99be-4001-88b5-739dfb35e47f" />
+
+           7. On the Wazuh dashboard Click on **"Threat Hunting"**:
+                 <img width="1853" height="715" alt="image" src="https://github.com/user-attachments/assets/90ab52b4-82b8-4403-963a-0046e9233b20" />
+
+           8. Then Click on **"Events"** Tab and you should be able to see the logs. if you don't, type **"Sysmon"** in the search field and Click **"Refresh"**.
+              Overall it may take some time for the logs to be available:
+                 <img width="1903" height="794" alt="image" src="https://github.com/user-attachments/assets/ed5b720b-8013-4222-9a57-bd8cd4c4fcf6" />
+
+## Malware Analysis
+
+> [!CAUTION]
+> This Section is purely for learning and demonstration of SOC capabilities. DO NOT use this to cause harm cuz both god and cops are watching and you don't want to be on their naughty list!!
+   - Mimikatz is a tool used for credential dumping,i.e, to steal credentials lis passwords, hashes, etc. And is detectable by antiviruses. So before downloading it, either disable the anti-virus and firewalls on the Windows VM or add an exclusion rule in the anti-virus to exclude the downloads folder from scanning. Always enable the security after the lab is completed. 
+ 
+   1. Download Mimikatz from the github link: Its safe to download btw :) [Mimikatz Github Link](https://github.com/ParrotSec/mimikatz) and select **Download zip**
+         <img width="1851" height="693" alt="image" src="https://github.com/user-attachments/assets/89aa21f0-314b-4285-bfdf-6e4e5e595156" />
+
+   2. Extract the contents of the file. It will be stored in Mimikatz-master folder:
+         <img width="1108" height="414" alt="image" src="https://github.com/user-attachments/assets/d2f526a2-a721-4fdb-9f36-a31063f4df9f" />
+
+   3. A troubleshooting step: To see if there are certain logs in archives , enter the following command in this case I'll be looking for mimikatz:
+
+            cd /var/ossec/logs/archives
+            cat archives.json | grep -i mimikatz
+
+   4. No output means no logs:
+         <img width="1083" height="89" alt="image" src="https://github.com/user-attachments/assets/85726a0a-5d14-4baf-bc90-08e5140cf662" />
+
+   5. Now time to execute mimikatz and generate some events. Open Powershell and head to mimikatz directory:
+         <img width="1521" height="396" alt="image" src="https://github.com/user-attachments/assets/a7a683ff-364f-4bb0-aff2-223042cc30b8" />
+
+   6. in this case, mimikatz executable is located in **"Win32"** folder so go to that folder and execute mimikatz:
+         <img width="962" height="401" alt="image" src="https://github.com/user-attachments/assets/5d47817e-a360-4d0b-bcd9-36b6f187f9f8" />
+
+   7. If it shows warning like this, click **"Run anyway"**
+         <img width="534" height="504" alt="image" src="https://github.com/user-attachments/assets/c5469bbb-d80c-469f-bd36-d58f2322d9fe" />
+
+   8. Now if we go back to the wazuh-manager CLI, and check the archives log, we should see mimikatz there:
+         <img width="1090" height="516" alt="image" src="https://github.com/user-attachments/assets/d6c85ee3-7eda-4745-90c2-a558e29e5194" />
+
+   9. On the wazuh dashboard, search for mimikatz and events should be there:
+         <img width="1855" height="746" alt="image" src="https://github.com/user-attachments/assets/bd994847-8a15-4cfc-a214-0958a31f949d" />
+
+   10. Now we need to fetch the event with **"data.win.system.eventID = 1"** which is the id for process creation event. To do that, we can set a filter that will show us only these events:
+          <img width="1454" height="678" alt="image" src="https://github.com/user-attachments/assets/e9d5db3e-77b0-4aea-8c1a-8bcf7d6f48c0" />
+
+   11. Now there is only one event with ID = 1 in my case. Expand that event to see more information:
+          <img width="1476" height="701" alt="image" src="https://github.com/user-attachments/assets/f945d3b1-bb94-4493-9d20-5cad5ee6d667" />
+
+   12. Now we will xreate an alert for mimikatz. To do the we will use the field **"originalFileName"**. We can use other fields but this field will trigger the alert even if the attacker
+       renames the file to mimicow (lol). 
+          <img width="1464" height="688" alt="image" src="https://github.com/user-attachments/assets/8a28f77b-8283-43e9-9be1-46fd7904be63" />
+
+   13. To create an alert, we need to add a rule to the wazuh config, which we can acccess via the dashboard (Thank wazuh-god) so head to **"Custom rules"** file:
+          <img width="1837" height="751" alt="image" src="https://github.com/user-attachments/assets/505b7a95-8ea0-49b3-b6b5-314812a48755" />
+          <img width="1846" height="657" alt="image" src="https://github.com/user-attachments/assets/f4205a16-c167-4c5d-9bb7-f1753c7a3ecc" />
+          <img width="1837" height="596" alt="image" src="https://github.com/user-attachments/assets/189b044b-afeb-432a-9fb4-95e0e7c87f2c" />
+          <img width="1838" height="372" alt="image" src="https://github.com/user-attachments/assets/41a06fd5-4405-4f94-a87e-ffd096d6e0fc" />
+
+   14. Add a rule to detect mimikatz:
+          - Custom rules always start from ID = 100000.
+          - Levels 1-15: 1 is lowest in severity and 15 is the highest.
+          - Mitre ID: t1003: Credential Dumping (What mimikatz is known for)
+          - type="pcre2": Regex
+          - And be careful about the indentation and case sensitivity and save it:
+          - Restart the manager as prompted
+         
+                <rule id="100002" level="15">
+                   <if_group>sysmon_event1</if_group>
+                   <field name="win.eventdata.originalFileName" type="pcre2">(?i)mimikatz\.exe</field>   
+                   <description>Mimikatz Activity Detected</description>
+                   <mitre>
+                       <id>T1003</id>
+                   </mitre>
+                 </rule>
+
+          <img width="878" height="638" alt="image" src="https://github.com/user-attachments/assets/bdc767ac-478f-4c77-895a-160005de890b" />
+
+   15. To prove the field usage point, lets change the file name of mimikatz to "trustmebro" and see if the alert catches it:
+          <img width="660" height="218" alt="image" src="https://github.com/user-attachments/assets/5da0d754-513b-4dfa-af78-a727916bbdd1" />
+
+   16. Run mimikatz again from the powershell:
+          <img width="892" height="203" alt="image" src="https://github.com/user-attachments/assets/9d559aee-b203-4643-9dd3-5222c19b5364" />
+
+   17. Heading back to dashboard, an alert should be triggered:
+          <img width="1829" height="728" alt="image" src="https://github.com/user-attachments/assets/8d76a4b9-70e5-4082-94ef-3b9f2670ba54" />
+
+   18. Go to Events, the alert information should be there as expected. Also additional fileds can be added to the table. Expand the alert:
+          <img width="1868" height="722" alt="image" src="https://github.com/user-attachments/assets/5fddd600-1ff6-4211-bb8c-563f7ffc94e9" />
+
+   19. Inspecting the document, we can see that the image is changed but the original filename still detects mimikatz:
+          <img width="1868" height="756" alt="image" src="https://github.com/user-attachments/assets/72cc3bab-d27b-425b-82cf-9a70ba541db6" />
+
+Pat yorself on the back for catching evil!! Now all we need to do is to automate our project:
+- The file needs to be enriched to confirm its malacious
+- SOC analyst should be alerted via Email if an alert is triggered
+- And all of this should be done seemlessly, i.e, with the help of SOAR.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
