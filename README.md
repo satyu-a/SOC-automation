@@ -109,7 +109,7 @@ This environment provides a foundation for hands-on learning, threat detection e
 
 - One server is ready. Now as a challange, deploy two additional servers withe the following configs and repeat till step **13**
 - Hostname: TheHive, 2 vCPU, 8GB ram, any storage is fine and the location should be same as Wazuh. Create same firewall rules under **"thehive"** name.
-- Hostname: Shuffle, 2 vCPU, 8GB ram, any storage is fine and the location should be same as Wazuh and TheHive. Create same firewall rules under **"shuffle"** name.
+- Hostname: UnuntuRespose, 2 vCPU, 8GB ram, any storage is fine and the location should be same as Wazuh and TheHive. Create same firewall rules under **"UResponse"** name.
 
 
 ## Step 3: Wazuh installation
@@ -749,6 +749,8 @@ Pat yourself on the back for catching evil!! Now all we need to do is to automat
 43. And it pretty much works flawlessly:
 
        <img width="964" height="429" alt="image" src="https://github.com/user-attachments/assets/905a31c6-5429-49ff-9442-232bfd538fff" />
+
+44. 
 
 
 
