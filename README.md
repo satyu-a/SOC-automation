@@ -750,7 +750,30 @@ Pat yourself on the back for catching evil!! Now all we need to do is to automat
 
        <img width="964" height="429" alt="image" src="https://github.com/user-attachments/assets/905a31c6-5429-49ff-9442-232bfd538fff" />
 
-44. 
+
+- Time to create a response setup:
+  
+  1. Delete all branches so we can create aproper response workflow:
+  
+        <img width="1879" height="827" alt="image" src="https://github.com/user-attachments/assets/358125e7-4fd0-431e-8468-20513da77f39" />
+
+  2. Go to shuffle and search for "http" and drag it to the workflow
+
+        <img width="1722" height="971" alt="image" src="https://github.com/user-attachments/assets/67817f78-3bd8-4600-9628-b0404420d879" />
+
+  3. Go to the wazuh-manager server settings on Vultr and add a firewall rule to allow traffic on port **55000** from anywhere. This will allow us to use wazuh API for http requests.
+     We will send a curl request to wazuh and get a JWT authentication token to use the API. The wazuh API user credentials can be found in the **wazuh-passwords.txt** file in the wazuh
+     server. Replace with your credentials and configuer the http node:
+
+           curl -u USER:PASSWORD -k -x GET "https://<WAZUH_SERVER_IP>:55000/security/user/authenticate?raw=true"
+        <img width="1104" height="602" alt="image" src="https://github.com/user-attachments/assets/32ba0606-1d2a-46a7-adf3-52a89c831596" /><br>
+        <img width="459" height="749" alt="image" src="https://github.com/user-attachments/assets/978cbe7f-dbd8-465b-82ac-5182f845c3e6" />
+
+  4. Now search Wazuh in shuffle and drang it to the workflow:
+
+
+
+
 
 
 
