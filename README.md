@@ -44,6 +44,11 @@ This environment provides a foundation for hands-on learning, threat detection e
 6. Malware Analysis (Mimikatz)
 7. Automation and enrichment
 
+## Logical Diagram of the setup:
+
+   <img width="1282" height="762" alt="image" src="https://github.com/user-attachments/assets/60f734e1-80fe-4380-aef2-48454f3353e5" />
+
+
 ## Step 1: Windows installation with Sysmon configuration
 - Windows will be installed locally as a VM as we will be running some malicious programs and it will help with containment.
 - Please refer to the link for [VMWare download](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion) and [VmWare Installation](https://www.youtube.com/watch?v=LWfaeLEhsXA) , if you don't have a hypervisor installed.
